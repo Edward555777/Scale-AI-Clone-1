@@ -1,0 +1,222 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - Scale AI Clone{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+    <!-- Welcome Section for Authenticated Users -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h2 class="card-title">
+                        <i class="fas fa-robot me-2"></i>Welcome back, {{ user.username }}!
+                    </h2>
+                    <p class="card-text">Ready to continue your data annotation work?</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <i class="fas fa-project-diagram fa-2x text-primary mb-2"></i>
+                    <h5 class="card-title">{{ active_projects.count }}</h5>
+                    <p class="card-text">Active Projects</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <i class="fas fa-tags fa-2x text-success mb-2"></i>
+                    <h5 class="card-title">{{ total_annotations }}</h5>
+                    <p class="card-text">Total Annotations</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <i class="fas fa-check-circle fa-2x text-info mb-2"></i>
+                    <h5 class="card-title">{{ approved_annotations }}</h5>
+                    <p class="card-text">Approved</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <i class="fas fa-bell fa-2x text-warning mb-2"></i>
+                    <h5 class="card-title">{{ unread_notifications }}</h5>
+                    <p class="card-text">Notifications</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Projects -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-clock me-2"></i>Recent Projects
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_projects %}
+                        <div class="list-group list-group-flush">
+                            {% for project in recent_projects %}
+                                <div class="list-group-item">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1">{{ project.name }}</h6>
+                                        <small class="text-muted">{{ project.created_at|date:"M d, Y" }}</small>
+                                    </div>
+                                    <p class="mb-1">{{ project.description|truncatewords:20 }}</p>
+                                    <small class="text-muted">
+                                        <span class="badge bg-{{ project.status }}">{{ project.status|title }}</span>
+                                        • {{ project.get_progress_percentage|floatformat:1 }}% complete
+                                    </small>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No projects yet. <a href="{% url 'projects:project_create' %}">Create your first project</a></p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-tasks me-2"></i>Quick Actions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'projects:project_create' %}" class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i>Create New Project
+                        </a>
+                        <a href="{% url 'core:dashboard' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-tachometer-alt me-2"></i>View Dashboard
+                        </a>
+                        <a href="{% url 'annotations:annotation_list' %}" class="btn btn-outline-success">
+                            <i class="fas fa-tags me-2"></i>Start Annotating
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% else %}
+    <!-- Landing Page for Non-Authenticated Users -->
+    <div class="row mb-5">
+        <div class="col-12 text-center">
+            <h1 class="display-4 mb-4">
+                <i class="fas fa-robot text-primary me-3"></i>
+                Scale AI Clone
+            </h1>
+            <p class="lead mb-4">
+                A powerful platform for data annotation and machine learning projects
+            </p>
+            <div class="d-flex justify-content-center gap-3">
+                <a href="{% url 'core:register' %}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-user-plus me-2"></i>Get Started
+                </a>
+                <a href="{% url 'login' %}" class="btn btn-outline-primary btn-lg">
+                    <i class="fas fa-sign-in-alt me-2"></i>Sign In
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features -->
+    <div class="row mb-5">
+        <div class="col-md-4 text-center">
+            <div class="card h-100">
+                <div class="card-body">
+                    <i class="fas fa-image fa-3x text-primary mb-3"></i>
+                    <h5 class="card-title">Image Annotation</h5>
+                    <p class="card-text">
+                        Annotate images with bounding boxes, polygons, and semantic segmentation for computer vision projects.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 text-center">
+            <div class="card h-100">
+                <div class="card-body">
+                    <i class="fas fa-file-alt fa-3x text-success mb-3"></i>
+                    <h5 class="card-title">Text Annotation</h5>
+                    <p class="card-text">
+                        Perform NER, sentiment analysis, and text classification for natural language processing tasks.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 text-center">
+            <div class="card h-100">
+                <div class="card-body">
+                    <i class="fas fa-chart-line fa-3x text-info mb-3"></i>
+                    <h5 class="card-title">Quality Control</h5>
+                    <p class="card-text">
+                        Built-in quality assurance tools and review workflows to ensure high-quality annotations.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- How It Works -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">
+                        <i class="fas fa-play-circle me-2"></i>How It Works
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 text-center">
+                            <div class="mb-3">
+                                <i class="fas fa-upload fa-2x text-primary"></i>
+                            </div>
+                            <h6>1. Upload Data</h6>
+                            <p class="text-muted">Upload your images, text, or other data files</p>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <div class="mb-3">
+                                <i class="fas fa-cog fa-2x text-success"></i>
+                            </div>
+                            <h6>2. Configure Project</h6>
+                            <p class="text-muted">Set up annotation guidelines and project settings</p>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <div class="mb-3">
+                                <i class="fas fa-users fa-2x text-info"></i>
+                            </div>
+                            <h6>3. Annotate</h6>
+                            <p class="text-muted">Start annotating with our intuitive tools</p>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <div class="mb-3">
+                                <i class="fas fa-download fa-2x text-warning"></i>
+                            </div>
+                            <h6>4. Export</h6>
+                            <p class="text-muted">Download your annotated data in various formats</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}
+{% endblock %}
