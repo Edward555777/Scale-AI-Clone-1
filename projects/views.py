@@ -36,7 +36,7 @@ def project_list(request):
     page_obj = paginator.get_page(page_number)
     
     context = {
-        'page_obj': page_obj,
+        'projects': page_obj,
         'status_filter': status_filter,
         'search_query': search_query,
         'total_projects': projects.count(),

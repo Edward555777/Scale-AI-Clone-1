@@ -27,10 +27,17 @@ class Project(models.Model):
         ('archived', 'Archived'),
     ]
     
+    VISIBILITY_CHOICES = [
+        ('public', 'Public'),
+        ('private', 'Private'),
+        ('shared', 'Shared'),
+    ]
+    
     name = models.CharField(max_length=200)
     description = models.TextField(blank=True)
     project_type = models.CharField(max_length=30, choices=PROJECT_TYPES)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='draft')
+    visibility = models.CharField(max_length=10, choices=VISIBILITY_CHOICES, default='private')
     
     # Владелец и участники
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='owned_projects')

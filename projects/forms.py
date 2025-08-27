@@ -6,7 +6,7 @@ class ProjectForm(forms.ModelForm):
     
     class Meta:
         model = Project
-        fields = ['name', 'description', 'project_type', 'status', 'instructions', 'guidelines', 'deadline']
+        fields = ['name', 'description', 'project_type', 'status', 'visibility', 'instructions', 'guidelines', 'deadline']
         widgets = {
             'name': forms.TextInput(attrs={
                 'class': 'form-control',
@@ -21,6 +21,9 @@ class ProjectForm(forms.ModelForm):
                 'class': 'form-select'
             }),
             'status': forms.Select(attrs={
+                'class': 'form-select'
+            }),
+            'visibility': forms.Select(attrs={
                 'class': 'form-select'
             }),
             'instructions': forms.Textarea(attrs={
