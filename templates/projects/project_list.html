@@ -1,0 +1,202 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Projects - Scale AI Clone{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12 d-flex justify-content-between align-items-center">
+        <h2>
+            <i class="fas fa-project-diagram me-2"></i>My Projects
+        </h2>
+        <a href="{% url 'projects:project_create' %}" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>Create Project
+        </a>
+    </div>
+</div>
+
+<!-- Search and Filter -->
+<div class="row mb-4">
+    <div class="col-md-8">
+        <div class="input-group">
+            <input type="text" class="form-control" placeholder="Search projects..." id="projectSearch">
+            <button class="btn btn-outline-secondary" type="button">
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <select class="form-select" id="statusFilter">
+            <option value="">All Status</option>
+            <option value="draft">Draft</option>
+            <option value="active">Active</option>
+            <option value="completed">Completed</option>
+            <option value="archived">Archived</option>
+        </select>
+    </div>
+</div>
+
+<!-- Projects Grid -->
+<div class="row" id="projectsGrid">
+    {% if projects %}
+        {% for project in projects %}
+        <div class="col-md-6 col-lg-4 mb-4 project-card" data-status="{{ project.status }}">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0">{{ project.name }}</h6>
+                    <span class="badge bg-{{ project.status }}">{{ project.status|title }}</span>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">{{ project.description|truncatewords:20 }}</p>
+                    <div class="mb-3">
+                        <small class="text-muted">
+                            <i class="fas fa-tag me-1"></i>{{ project.get_project_type_display }}
+                        </small>
+                    </div>
+                    <div class="progress mb-3" style="height: 8px;">
+                        <div class="progress-bar" role="progressbar" style="width: {{ project.get_progress_percentage }}%"></div>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">{{ project.get_progress_percentage|floatformat:1 }}% complete</small>
+                        <small class="text-muted">{{ project.files.count }} files</small>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="btn-group w-100" role="group">
+                        <a href="{% url 'projects:project_detail' project.pk %}" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-eye me-1"></i>View
+                        </a>
+                        <a href="{% url 'projects:project_edit' project.pk %}" class="btn btn-outline-secondary btn-sm">
+                            <i class="fas fa-edit me-1"></i>Edit
+                        </a>
+                        <button type="button" class="btn btn-outline-danger btn-sm" onclick="deleteProject({{ project.pk }})">
+                            <i class="fas fa-trash me-1"></i>Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="col-12">
+            <div class="text-center py-5">
+                <i class="fas fa-project-diagram fa-3x text-muted mb-3"></i>
+                <h4 class="text-muted">No projects yet</h4>
+                <p class="text-muted">Create your first project to get started with data annotation.</p>
+                <a href="{% url 'projects:project_create' %}" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>Create Your First Project
+                </a>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Pagination -->
+{% if projects.has_other_pages %}
+<nav aria-label="Project pagination">
+    <ul class="pagination justify-content-center">
+        {% if projects.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ projects.previous_page_number }}">Previous</a>
+            </li>
+        {% endif %}
+        
+        {% for num in projects.paginator.page_range %}
+            {% if projects.number == num %}
+                <li class="page-item active">
+                    <span class="page-link">{{ num }}</span>
+                </li>
+            {% elif num > projects.number|add:'-3' and num < projects.number|add:'3' %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                </li>
+            {% endif %}
+        {% endfor %}
+        
+        {% if projects.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ projects.next_page_number }}">Next</a>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Search functionality
+document.getElementById('projectSearch').addEventListener('input', function() {
+    const searchTerm = this.value.toLowerCase();
+    const projectCards = document.querySelectorAll('.project-card');
+    
+    projectCards.forEach(card => {
+        const projectName = card.querySelector('.card-header h6').textContent.toLowerCase();
+        const projectDesc = card.querySelector('.card-text').textContent.toLowerCase();
+        
+        if (projectName.includes(searchTerm) || projectDesc.includes(searchTerm)) {
+            card.style.display = 'block';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+});
+
+// Status filter
+document.getElementById('statusFilter').addEventListener('change', function() {
+    const selectedStatus = this.value;
+    const projectCards = document.querySelectorAll('.project-card');
+    
+    projectCards.forEach(card => {
+        const projectStatus = card.dataset.status;
+        
+        if (!selectedStatus || projectStatus === selectedStatus) {
+            card.style.display = 'block';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+});
+
+// Delete project function
+function deleteProject(projectId) {
+    if (confirm('Are you sure you want to delete this project? This action cannot be undone.')) {
+        fetch(`/projects/${projectId}/delete/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error deleting project: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error deleting project');
+        });
+    }
+}
+
+// Get CSRF token
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+{% endblock %}

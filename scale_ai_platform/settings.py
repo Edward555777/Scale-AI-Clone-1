@@ -191,5 +191,20 @@ if not DEBUG:
     SECURE_CONTENT_TYPE_NOSNIFF = True
     X_FRAME_OPTIONS = 'DENY'
     
-    # Update allowed hosts
-    ALLOWED_HOSTS = ['*']  # Configure this properly for production
+    # Update allowed hosts for production
+    ALLOWED_HOSTS = [
+        'scale-ai-clone-1.onrender.com',
+        'scale-ai-clone.onrender.com',
+        '.onrender.com',
+        'localhost',
+        '127.0.0.1'
+    ]
+else:
+    # Development settings
+    ALLOWED_HOSTS = [
+        'localhost',
+        '127.0.0.1',
+        'scale-ai-clone-1.onrender.com',
+        'scale-ai-clone.onrender.com',
+        '.onrender.com'
+    ]
