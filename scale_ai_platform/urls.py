@@ -18,12 +18,17 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from demo_views import demo_home, demo_projects, demo_project_detail, demo_annotation_tool, demo_create_project, demo_upload_file, demo_export_data
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('core.urls')),
-    path('projects/', include('projects.urls')),
-    path('annotations/', include('annotations.urls')),
+    path('', demo_home, name='demo_home'),
+    path('projects/', demo_projects, name='demo_projects'),
+    path('projects/<int:project_id>/', demo_project_detail, name='demo_project_detail'),
+    path('annotation-tool/', demo_annotation_tool, name='demo_annotation_tool'),
+    path('demo/create-project/', demo_create_project, name='demo_create_project'),
+    path('demo/upload-file/', demo_upload_file, name='demo_upload_file'),
+    path('demo/export-data/', demo_export_data, name='demo_export_data'),
     path('accounts/', include('django.contrib.auth.urls')),
 ]
 

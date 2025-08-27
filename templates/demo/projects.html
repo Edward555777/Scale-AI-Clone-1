@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Projects - Scale AI Clone Demo{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i>
+            <strong>Demo Mode:</strong> All projects are simulated with demo data.
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-12 d-flex justify-content-between align-items-center">
+        <h2>
+            <i class="fas fa-project-diagram me-2"></i>Projects
+        </h2>
+        <button class="btn btn-primary" onclick="createDemoProject()">
+            <i class="fas fa-plus me-2"></i>Create Project
+        </button>
+    </div>
+</div>
+
+<!-- Projects Grid -->
+<div class="row" id="projectsGrid">
+    {% for project in projects %}
+    <div class="col-md-6 col-lg-4 mb-4 project-card">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h6 class="mb-0">{{ project.name }}</h6>
+                <span class="badge bg-{{ project.status|lower }}">{{ project.status }}</span>
+            </div>
+            <div class="card-body">
+                <p class="card-text">{{ project.description }}</p>
+                <div class="mb-3">
+                    <small class="text-muted">
+                        <i class="fas fa-tag me-1"></i>{{ project.type }}
+                    </small>
+                </div>
+                <div class="progress mb-3" style="height: 8px;">
+                    <div class="progress-bar" role="progressbar" style="width: {{ project.progress }}%"></div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <small class="text-muted">{{ project.progress }}% complete</small>
+                    <small class="text-muted">{{ project.files_count }} files</small>
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="btn-group w-100" role="group">
+                    <a href="{% url 'demo_project_detail' project.id %}" class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-eye me-1"></i>View
+                    </a>
+                    <button class="btn btn-outline-success btn-sm" onclick="startAnnotation({{ project.id }})">
+                        <i class="fas fa-tags me-1"></i>Annotate
+                    </button>
+                    <button class="btn btn-outline-info btn-sm" onclick="exportProject({{ project.id }})">
+                        <i class="fas fa-download me-1"></i>Export
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Empty State -->
+{% if not projects %}
+<div class="col-12">
+    <div class="text-center py-5">
+        <i class="fas fa-project-diagram fa-3x text-muted mb-3"></i>
+        <h4 class="text-muted">No projects yet</h4>
+        <p class="text-muted">Create your first project to get started with data annotation.</p>
+        <button class="btn btn-primary" onclick="createDemoProject()">
+            <i class="fas fa-plus me-2"></i>Create Your First Project
+        </button>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function createDemoProject() {
+    const projectData = {
+        name: 'Demo Project ' + (Math.floor(Math.random() * 1000) + 1),
+        description: 'This is a demo project created to showcase the platform functionality.',
+        type: 'Image Classification'
+    };
+    
+    fetch('/demo/create-project/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(projectData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Demo project created successfully!');
+            location.reload();
+        } else {
+            alert('Error creating project: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error creating project');
+    });
+}
+
+function startAnnotation(projectId) {
+    alert(`Starting annotation for project ${projectId}. In a real application, this would open the annotation tool.`);
+    window.location.href = '/demo/annotation-tool/';
+}
+
+function exportProject(projectId) {
+    fetch('/demo/export-data/')
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Project exported successfully! Download would start in a real application.');
+        } else {
+            alert('Error exporting project: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error exporting project');
+    });
+}
+</script>
+{% endblock %}

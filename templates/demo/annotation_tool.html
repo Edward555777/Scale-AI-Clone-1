@@ -1,0 +1,268 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Annotation Tool - Scale AI Clone Demo{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i>
+            <strong>Demo Mode:</strong> This is a simulated annotation tool. All annotations are demo data.
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Annotation Area -->
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-tags me-2"></i>Annotation Tool
+                </h5>
+            </div>
+            <div class="card-body">
+                <!-- Sample Image -->
+                <div class="text-center mb-4">
+                    <img src="https://via.placeholder.com/600x400/007bff/ffffff?text=Sample+Image+for+Annotation" 
+                         class="img-fluid border" alt="Sample Image" id="annotationImage">
+                </div>
+                
+                <!-- Annotation Controls -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Image Classification</h6>
+                        <div class="btn-group-vertical w-100" role="group">
+                            <button type="button" class="btn btn-outline-primary mb-2" onclick="addAnnotation('Animal')">
+                                <i class="fas fa-paw me-2"></i>Animal
+                            </button>
+                            <button type="button" class="btn btn-outline-primary mb-2" onclick="addAnnotation('Vehicle')">
+                                <i class="fas fa-car me-2"></i>Vehicle
+                            </button>
+                            <button type="button" class="btn btn-outline-primary mb-2" onclick="addAnnotation('Food')">
+                                <i class="fas fa-utensils me-2"></i>Food
+                            </button>
+                            <button type="button" class="btn btn-outline-primary mb-2" onclick="addAnnotation('Person')">
+                                <i class="fas fa-user me-2"></i>Person
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Object Detection</h6>
+                        <div class="btn-group-vertical w-100" role="group">
+                            <button type="button" class="btn btn-outline-success mb-2" onclick="drawBoundingBox()">
+                                <i class="fas fa-vector-square me-2"></i>Draw Bounding Box
+                            </button>
+                            <button type="button" class="btn btn-outline-success mb-2" onclick="addPolygon()">
+                                <i class="fas fa-draw-polygon me-2"></i>Add Polygon
+                            </button>
+                            <button type="button" class="btn btn-outline-success mb-2" onclick="addPoint()">
+                                <i class="fas fa-map-marker-alt me-2"></i>Add Point
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Current Annotations -->
+                <div class="mt-4">
+                    <h6>Current Annotations</h6>
+                    <div id="annotationsList" class="border rounded p-3 bg-light">
+                        <p class="text-muted mb-0">No annotations yet. Click buttons above to add annotations.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Sidebar -->
+    <div class="col-md-4">
+        <!-- Project Info -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-info-circle me-2"></i>Project Info
+                </h6>
+            </div>
+            <div class="card-body">
+                <p><strong>Project:</strong> Image Classification Demo</p>
+                <p><strong>File:</strong> sample_image_001.jpg</p>
+                <p><strong>Progress:</strong> 3 of 50 files</p>
+                <div class="progress mb-2">
+                    <div class="progress-bar" role="progressbar" style="width: 6%"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Annotation Types -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-list me-2"></i>Annotation Types
+                </h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled">
+                    {% for type in annotation_types %}
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>{{ type }}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Actions -->
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-cogs me-2"></i>Actions
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <button class="btn btn-success" onclick="saveAnnotations()">
+                        <i class="fas fa-save me-2"></i>Save Annotations
+                    </button>
+                    <button class="btn btn-primary" onclick="nextFile()">
+                        <i class="fas fa-arrow-right me-2"></i>Next File
+                    </button>
+                    <button class="btn btn-secondary" onclick="previousFile()">
+                        <i class="fas fa-arrow-left me-2"></i>Previous File
+                    </button>
+                    <button class="btn btn-warning" onclick="skipFile()">
+                        <i class="fas fa-forward me-2"></i>Skip File
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let annotations = [];
+
+function addAnnotation(label) {
+    const annotation = {
+        id: Date.now(),
+        type: 'classification',
+        label: label,
+        timestamp: new Date().toLocaleTimeString()
+    };
+    
+    annotations.push(annotation);
+    updateAnnotationsList();
+    
+    // Visual feedback
+    const button = event.target;
+    button.classList.add('btn-primary');
+    button.classList.remove('btn-outline-primary');
+    setTimeout(() => {
+        button.classList.remove('btn-primary');
+        button.classList.add('btn-outline-primary');
+    }, 500);
+}
+
+function drawBoundingBox() {
+    const annotation = {
+        id: Date.now(),
+        type: 'bounding_box',
+        label: 'Object',
+        coordinates: {x: 100, y: 100, width: 200, height: 150},
+        timestamp: new Date().toLocaleTimeString()
+    };
+    
+    annotations.push(annotation);
+    updateAnnotationsList();
+    alert('Bounding box drawn! (Demo simulation)');
+}
+
+function addPolygon() {
+    const annotation = {
+        id: Date.now(),
+        type: 'polygon',
+        label: 'Region',
+        coordinates: [{x: 100, y: 100}, {x: 200, y: 100}, {x: 200, y: 200}, {x: 100, y: 200}],
+        timestamp: new Date().toLocaleTimeString()
+    };
+    
+    annotations.push(annotation);
+    updateAnnotationsList();
+    alert('Polygon added! (Demo simulation)');
+}
+
+function addPoint() {
+    const annotation = {
+        id: Date.now(),
+        type: 'point',
+        label: 'Point of Interest',
+        coordinates: {x: 150, y: 150},
+        timestamp: new Date().toLocaleTimeString()
+    };
+    
+    annotations.push(annotation);
+    updateAnnotationsList();
+    alert('Point added! (Demo simulation)');
+}
+
+function updateAnnotationsList() {
+    const container = document.getElementById('annotationsList');
+    
+    if (annotations.length === 0) {
+        container.innerHTML = '<p class="text-muted mb-0">No annotations yet. Click buttons above to add annotations.</p>';
+        return;
+    }
+    
+    let html = '';
+    annotations.forEach(annotation => {
+        html += `
+            <div class="d-flex justify-content-between align-items-center mb-2 p-2 border rounded bg-white">
+                <div>
+                    <strong>${annotation.label}</strong>
+                    <br>
+                    <small class="text-muted">${annotation.type} • ${annotation.timestamp}</small>
+                </div>
+                <button class="btn btn-sm btn-outline-danger" onclick="removeAnnotation(${annotation.id})">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        `;
+    });
+    
+    container.innerHTML = html;
+}
+
+function removeAnnotation(id) {
+    annotations = annotations.filter(a => a.id !== id);
+    updateAnnotationsList();
+}
+
+function saveAnnotations() {
+    if (annotations.length === 0) {
+        alert('No annotations to save!');
+        return;
+    }
+    
+    alert(`Saved ${annotations.length} annotations! (Demo simulation)`);
+    annotations = [];
+    updateAnnotationsList();
+}
+
+function nextFile() {
+    alert('Moving to next file... (Demo simulation)');
+    // In real app, this would load the next file
+}
+
+function previousFile() {
+    alert('Moving to previous file... (Demo simulation)');
+    // In real app, this would load the previous file
+}
+
+function skipFile() {
+    alert('File skipped! (Demo simulation)');
+    // In real app, this would skip the current file
+}
+</script>
+{% endblock %}

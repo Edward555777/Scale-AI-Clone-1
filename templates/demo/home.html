@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Scale AI Clone - Demo{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i>
+            <strong>Demo Mode:</strong> This is a working demonstration of the Scale AI Clone platform. All functionality is simulated with demo data.
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-12">
+        <h2>
+            <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+        </h2>
+        <p class="text-muted">Welcome to Scale AI Clone! Here's your overview.</p>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="fas fa-project-diagram fa-2x text-primary mb-2"></i>
+                <h5 class="card-title">{{ total_projects }}</h5>
+                <p class="card-text">Projects</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="fas fa-file fa-2x text-success mb-2"></i>
+                <h5 class="card-title">{{ total_files }}</h5>
+                <p class="card-text">Files</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="fas fa-tags fa-2x text-info mb-2"></i>
+                <h5 class="card-title">{{ total_annotations }}</h5>
+                <p class="card-text">Annotations</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="fas fa-check-circle fa-2x text-warning mb-2"></i>
+                <h5 class="card-title">85%</h5>
+                <p class="card-text">Quality Score</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Recent Projects -->
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-project-diagram me-2"></i>Recent Projects
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="list-group list-group-flush">
+                    {% for project in recent_projects %}
+                    <div class="list-group-item">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1">{{ project.name }}</h6>
+                            <small class="text-muted">{{ project.created_at }}</small>
+                        </div>
+                        <p class="mb-1">{{ project.description }}</p>
+                        <small class="text-muted">
+                            <span class="badge bg-{{ project.status|lower }}">{{ project.status }}</span>
+                            • {{ project.progress }}% complete
+                            • {{ project.files_count }} files
+                        </small>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Quick Actions -->
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-bolt me-2"></i>Quick Actions
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'demo_projects' %}" class="btn btn-primary">
+                        <i class="fas fa-project-diagram me-2"></i>View All Projects
+                    </a>
+                    <a href="{% url 'demo_annotation_tool' %}" class="btn btn-success">
+                        <i class="fas fa-tags me-2"></i>Try Annotation Tool
+                    </a>
+                    <button class="btn btn-info" onclick="createDemoProject()">
+                        <i class="fas fa-plus me-2"></i>Create New Project
+                    </button>
+                    <button class="btn btn-warning" onclick="uploadDemoFile()">
+                        <i class="fas fa-upload me-2"></i>Upload Files
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function createDemoProject() {
+    const projectData = {
+        name: 'Demo Project ' + (Math.floor(Math.random() * 1000) + 1),
+        description: 'This is a demo project created to showcase the platform functionality.',
+        type: 'Image Classification'
+    };
+    
+    fetch('/demo/create-project/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(projectData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Demo project created successfully!');
+            location.reload();
+        } else {
+            alert('Error creating project: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error creating project');
+    });
+}
+
+function uploadDemoFile() {
+    alert('Demo file upload simulation! In a real application, you would select and upload files here.');
+}
+</script>
+{% endblock %}
