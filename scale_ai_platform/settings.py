@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from pathlib import Path
 from decouple import config
 import os
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -173,3 +174,22 @@ ALLOWED_DOCUMENT_EXTENSIONS = ['.txt', '.csv', '.json', '.xml']
 # Project settings
 MAX_PROJECTS_PER_USER = 50
 MAX_FILES_PER_PROJECT = 1000
+
+# Production settings
+if not DEBUG:
+    # Use PostgreSQL in production
+    DATABASES['default'] = dj_database_url.config(
+        default=os.environ.get('DATABASE_URL')
+    )
+    
+    # Add whitenoise for static files
+    MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+    
+    # Security settings
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    X_FRAME_OPTIONS = 'DENY'
+    
+    # Update allowed hosts
+    ALLOWED_HOSTS = ['*']  # Configure this properly for production
