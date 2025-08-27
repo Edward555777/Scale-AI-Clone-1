@@ -3,10 +3,7 @@ services:
     name: scale-ai-clone
     env: python
     plan: free
-    buildCommand: |
-      pip install -r requirements.txt
-      python init_db.py
-      python manage.py collectstatic --noinput
+    buildCommand: bash build.sh
     startCommand: gunicorn scale_ai_platform.wsgi:application
     envVars:
       - key: PYTHON_VERSION

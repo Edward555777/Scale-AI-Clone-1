@@ -19,8 +19,18 @@ def init_database():
     
     # Run migrations
     print("📦 Running migrations...")
-    execute_from_command_line(['manage.py', 'makemigrations'])
-    execute_from_command_line(['manage.py', 'migrate'])
+    try:
+        execute_from_command_line(['manage.py', 'makemigrations'])
+        print("✅ Migrations created successfully")
+    except Exception as e:
+        print(f"⚠️ Warning creating migrations: {e}")
+    
+    try:
+        execute_from_command_line(['manage.py', 'migrate'])
+        print("✅ Migrations applied successfully")
+    except Exception as e:
+        print(f"❌ Error applying migrations: {e}")
+        return
     
     # Create superuser if it doesn't exist
     if not User.objects.filter(username='admin').exists():
