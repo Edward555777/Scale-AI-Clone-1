@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scale AI Clone - Data Annotation Platform</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .hero-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 100px 0;
+        }
+        .feature-card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        .btn-custom {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 25px;
+            padding: 12px 30px;
+        }
+        .btn-custom:hover {
+            background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-brain me-2"></i>Scale AI Clone
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="#features">Features</a>
+                <a class="nav-link" href="#demo">Demo</a>
+                <a class="nav-link" href="https://github.com/Edward555777/Scale-AI-Clone-1" target="_blank">GitHub</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container text-center">
+            <h1 class="display-4 mb-4">
+                <i class="fas fa-tags me-3"></i>Data Annotation Platform
+            </h1>
+            <p class="lead mb-5">Professional data annotation platform for machine learning projects</p>
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <a href="#demo" class="btn btn-light btn-lg me-3">
+                        <i class="fas fa-play me-2"></i>Try Demo
+                    </a>
+                    <a href="https://github.com/Edward555777/Scale-AI-Clone-1" class="btn btn-outline-light btn-lg" target="_blank">
+                        <i class="fab fa-github me-2"></i>View Code
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section id="features" class="py-5">
+        <div class="container">
+            <h2 class="text-center mb-5">Platform Features</h2>
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <div class="card feature-card h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-project-diagram fa-3x text-primary mb-3"></i>
+                            <h5 class="card-title">Project Management</h5>
+                            <p class="card-text">Create and manage annotation projects with ease. Support for multiple file types and collaboration.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card feature-card h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-tags fa-3x text-success mb-3"></i>
+                            <h5 class="card-title">Data Annotation</h5>
+                            <p class="card-text">Powerful annotation tools for images, text, and documents. Multiple annotation types supported.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card feature-card h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-chart-line fa-3x text-info mb-3"></i>
+                            <h5 class="card-title">Quality Control</h5>
+                            <p class="card-text">Built-in quality review system with scoring and approval workflows.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Demo Section -->
+    <section id="demo" class="py-5 bg-light">
+        <div class="container">
+            <h2 class="text-center mb-5">Live Demo</h2>
+            <div class="row justify-content-center">
+                <div class="col-md-8 text-center">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Try the Platform</h5>
+                            <p class="card-text">Experience the full functionality of our data annotation platform.</p>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <a href="https://scale-ai-clone.onrender.com" class="btn btn-custom w-100" target="_blank">
+                                        <i class="fas fa-external-link-alt me-2"></i>Live Demo (Render)
+                                    </a>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <a href="https://github.com/Edward555777/Scale-AI-Clone-1#installation" class="btn btn-outline-primary w-100" target="_blank">
+                                        <i class="fas fa-download me-2"></i>Install Locally
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Installation -->
+    <section class="py-5">
+        <div class="container">
+            <h2 class="text-center mb-5">Quick Installation</h2>
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Run Locally</h5>
+                            <pre class="bg-dark text-light p-3 rounded"><code># Clone repository
+git clone https://github.com/Edward555777/Scale-AI-Clone-1.git
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Run migrations
+python manage.py migrate
+
+# Start server
+python manage.py runserver</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-4">
+        <div class="container text-center">
+            <p>&copy; 2025 Scale AI Clone. Built with Django and Bootstrap.</p>
+            <div class="mt-3">
+                <a href="https://github.com/Edward555777/Scale-AI-Clone-1" class="text-light me-3" target="_blank">
+                    <i class="fab fa-github fa-2x"></i>
+                </a>
+                <a href="https://github.com/Edward555777/Scale-AI-Clone-1/issues" class="text-light" target="_blank">
+                    <i class="fas fa-bug fa-2x"></i>
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
